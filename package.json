@@ -1,0 +1,41 @@
+{
+  "name": "uhurued-task-tracker",
+  "private": false,
+  "version": "1.0.0",
+  "description": "Collaborative software engineering task tracker, .env vault, repo onboarding hub, and autonomous local Qwen3.6-Heretic + DeepSeek Harness bug-fix platform for task.uhurued.com",
+  "license": "MIT",
+  "type": "module",
+  "scripts": {
+    "dev": "vite --host 0.0.0.0 --port 5179",
+    "dev:api": "tsx server/dev-server.ts",
+    "build": "tsc -b && vite build",
+    "preview": "vite preview --host 0.0.0.0",
+    "test": "vitest run",
+    "test:watch": "vitest"
+  },
+  "dependencies": {
+    "@neondatabase/serverless": "^1.1.0",
+    "hono": "^4.13.5",
+    "jose": "^6.2.10",
+    "lucide-react": "^0.561.0",
+    "nanoid": "^5.1.5",
+    "react": "^19.2.1",
+    "react-dom": "^19.2.1",
+    "resend": "^6.25.0",
+    "zod": "^3.24.2"
+  },
+  "devDependencies": {
+    "@testing-library/jest-dom": "^6.6.3",
+    "@testing-library/react": "^16.3.0",
+    "@testing-library/user-event": "^14.6.1",
+    "@types/node": "^22.13.4",
+    "@types/react": "^19.2.1",
+    "@types/react-dom": "^19.2.1",
+    "@vitejs/plugin-react": "^5.1.1",
+    "jsdom": "^26.0.0",
+    "tsx": "^4.19.3",
+    "typescript": "^5.8.2",
+    "vite": "^7.2.7",
+    "vitest": "^3.0.7"
+  }
+}

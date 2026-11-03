@@ -1,0 +1,5 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
+  <rect width="64" height="64" rx="14" fill="#122218"/>
+  <text x="10" y="29" font-family="system-ui, -apple-system, sans-serif" font-weight="900" font-size="20" fill="#FFD75B">uhuru</text>
+  <text x="10" y="50" font-family="system-ui, -apple-system, sans-serif" font-weight="900" font-size="20" fill="#F4F0E7">task<tspan fill="#FFD75B">.</tspan></text>
+</svg>
