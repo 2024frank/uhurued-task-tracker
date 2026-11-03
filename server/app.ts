@@ -7,8 +7,8 @@ import {
   HERETIC_MODEL_ID,
   synthesizeTasksFromTranscript,
   triageBugAndWakeDsh,
-} from './ai';
-import { createTrackerMailer, DEFAULT_SENDER, type TrackerMailer } from './email';
+} from './ai.js';
+import { createTrackerMailer, DEFAULT_SENDER, type TrackerMailer } from './email.js';
 import {
   deriveDisplayName,
   getTrackerStore,
@@ -19,7 +19,7 @@ import {
   type TrackerStore,
   type UpdateKind,
   type UserRecord,
-} from './store';
+} from './store.js';
 
 function getSecretString(): string {
   return process.env.TOKEN_SECRET || 'uhurued-task-tracker-default-jwt-secret-2026-kusi';

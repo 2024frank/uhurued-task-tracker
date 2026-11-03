@@ -47,7 +47,7 @@ Add the following DNS record in your GoDaddy DNS zone for **`uhurued.com`**:
 
 | Type | Name / Host | Value / Points To | TTL |
 | :--- | :--- | :--- | :--- |
-| `CNAME` | `task` | `cname.vercel-dns.com.` | `600` (or Default) |
+| `CNAME` | `task` | `ecdd5a9c4317ff54.vercel-dns-016.com.` (or `cname.vercel-dns.com.`) | `600` (or Default) |
 
 ---
 

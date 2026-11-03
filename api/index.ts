@@ -1,11 +1,9 @@
-import { handle } from 'hono/vercel';
-import { createTrackerApp } from '../server/app';
+import { createTrackerApp } from '../server/app.js';
 
 const app = createTrackerApp();
 
-export const GET = handle(app);
-export const POST = handle(app);
-export const PATCH = handle(app);
-export const PUT = handle(app);
-export const DELETE = handle(app);
-export const OPTIONS = handle(app);
+export default {
+  fetch: (request: Request) => app.fetch(request),
+};
+
+export const maxDuration = 60;
