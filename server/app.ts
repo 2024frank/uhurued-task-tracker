@@ -77,18 +77,23 @@ export function createTrackerApp(options?: { store?: TrackerStore; mailer?: Trac
   const app = new Hono();
   app.use('*', cors());
 
+  app.onError((err, c) => {
+    console.error('Tracker API error:', err);
+    return c.json({ error: err.message || 'Internal server error' }, 500);
+  });
+
   async function requireAuth(c: { req: { header: (name: string) => string | undefined } }): Promise<UserRecord | null> {
     const opsHeader = c.req.header('x-tracker-ops-key');
     const expectedOps = process.env.TRACKER_OPS_SECRET || 'uhuru-dsh-ops-local';
     if (opsHeader && opsHeader === expectedOps) {
-      return store.upsertUser('fkusiapp@oberlin.edu', 'DeepSeek Harness Ops Agent');
+      return store.upsertUser('fkusiapp@oberlin.edu', 'Frank Kusi Appiah');
     }
 
     const auth = c.req.header('authorization') || '';
     if (!auth.toLowerCase().startsWith('bearer ')) return null;
     const token = auth.slice(7).trim();
     if (token === expectedOps) {
-      return store.upsertUser('fkusiapp@oberlin.edu', 'DeepSeek Harness Ops Agent');
+      return store.upsertUser('fkusiapp@oberlin.edu', 'Frank Kusi Appiah');
     }
     const verified = await verifySessionToken(token);
     if (!verified) return null;

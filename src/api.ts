@@ -320,6 +320,10 @@ export class TrackerApiClient {
     });
   }
 
+  async inviteTeamMember(input: { email: string; name?: string; githubHandle?: string }): Promise<{ member: UserAccount }> {
+    return this.inviteEngineer(input);
+  }
+
   async updateProfile(patch: { name?: string; githubHandle?: string; bio?: string }): Promise<{ user: UserAccount }> {
     return this.request('/auth/profile', {
       method: 'PATCH',
@@ -327,3 +331,5 @@ export class TrackerApiClient {
     });
   }
 }
+
+export const defaultTrackerApi = new TrackerApiClient();

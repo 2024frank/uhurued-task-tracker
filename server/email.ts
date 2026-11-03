@@ -3,10 +3,10 @@ import { Resend } from 'resend';
 // Same one-tone forest green (#122218), campus gold (#FFD75B), and warm cream (#EAE5D7)
 // table layout as Out There (out-there/server/services/email.ts) so Gmail and Outlook
 // file verification codes and task notices under Primary rather than Promotions.
-// Always sends from Uhurued Tracker <tracker@uhurued.com>.
+// Always sends from Out There <task@uhurued.com>.
 
-export const DEFAULT_SENDER_ADDRESS = 'tracker@uhurued.com';
-export const DEFAULT_SENDER = `Uhurued Tracker <${DEFAULT_SENDER_ADDRESS}>`;
+export const DEFAULT_SENDER_ADDRESS = 'task@uhurued.com';
+export const DEFAULT_SENDER = `Out There <${DEFAULT_SENDER_ADDRESS}>`;
 
 const sans = `-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif`;
 const mono = `'SFMono-Regular',Menlo,Consolas,'Courier New',monospace`;
@@ -20,8 +20,38 @@ export function normalizeTrackerSender(from?: string): string {
   const rawAddr = trimmed.includes('<')
     ? trimmed.slice(trimmed.indexOf('<') + 1, trimmed.indexOf('>')).trim()
     : trimmed;
-  const finalAddr = rawAddr.includes('@uhurued.com') ? rawAddr : DEFAULT_SENDER_ADDRESS;
-  return `Uhurued Tracker <${finalAddr}>`;
+  // Always use task@uhurued.com if unset, invalid, or legacy tracker@uhurued.com
+  const finalAddr =
+    rawAddr.includes('@uhurued.com') && rawAddr.toLowerCase() !== 'tracker@uhurued.com'
+      ? rawAddr
+      : DEFAULT_SENDER_ADDRESS;
+  return `Out There <${finalAddr}>`;
+}
+
+export function resolveResendApiKeys(primaryKey?: string, envSource: NodeJS.ProcessEnv = process.env): string[] {
+  const candidates = [
+    envSource.RESEND_API_KEY2,
+    envSource.RESEND_API_KEY_2,
+    primaryKey,
+    envSource.RESEND_API_KEY,
+    envSource.RESEND_API_KEY1,
+    envSource.RESEND_API_KEY_1,
+    envSource.RESEND_API_KEY3,
+    envSource.RESEND_API_KEYS,
+  ];
+  const seen = new Set<string>();
+  const keys: string[] = [];
+  for (const raw of candidates) {
+    if (!raw || typeof raw !== 'string') continue;
+    for (const part of raw.split(/[\s,]+/)) {
+      const cleaned = part.trim();
+      if (cleaned.startsWith('re_') && cleaned !== 're_replace_me' && cleaned.length >= 12 && !seen.has(cleaned)) {
+        seen.add(cleaned);
+        keys.push(cleaned);
+      }
+    }
+  }
+  return keys;
 }
 
 export function renderOneToneEmail(options: {
@@ -54,7 +84,7 @@ export function renderOneToneEmail(options: {
             <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0">
               <tr>
                 <td style="font-family:${sans};font-size:26px;line-height:28px;font-weight:900;letter-spacing:-0.5px;color:#FFD75B">
-                  uhuru <span style="color:#F4F0E7">tracker</span><span style="color:#FFD75B">.</span>
+                  out <span style="color:#F4F0E7">there</span><span style="color:#FFD75B">.</span>
                 </td>
                 <td align="right" style="font-family:${sans};font-size:14px;line-height:20px;font-weight:600;color:#FFD75B">
                   ${escapeHtml(options.badge)}
@@ -80,13 +110,13 @@ ${options.bodyRowsHtml}
 
 export function codeEmailHtml(code: string) {
   const bodyRowsHtml = [
-    `        <tr><td style="padding:32px 0 0;font-family:${sans};font-size:16px;line-height:25px;color:#EAE5D7">Your sign-in code for task.uhurued.com:</td></tr>`,
+    `        <tr><td style="padding:32px 0 0;font-family:${sans};font-size:16px;line-height:25px;color:#EAE5D7">Your sign-in code:</td></tr>`,
     `        <tr><td style="padding:14px 0 0;font-family:${mono};font-size:44px;line-height:48px;font-weight:800;letter-spacing:10px;color:#FFD75B;mso-line-height-rule:exactly">${escapeHtml(code)}</td></tr>`,
-    `        <tr><td style="padding:20px 0 0;font-family:${sans};font-size:16px;line-height:25px;color:#EAE5D7">It works for 10 minutes. Enter it on task.uhurued.com to open your engineering workspace.</td></tr>`,
+    `        <tr><td style="padding:20px 0 0;font-family:${sans};font-size:16px;line-height:25px;color:#EAE5D7">It works for 10 minutes. Enter it on task.uhurued.com.</td></tr>`,
     `        <tr><td style="padding:12px 0 32px;font-family:${sans};font-size:15px;line-height:24px;color:#9BB0A2">If you didn't ask for this, ignore it. Nobody gets in without the code.</td></tr>`,
   ].join('\n');
   return renderOneToneEmail({
-    title: 'Your Uhurued Tracker sign-in code',
+    title: 'Your Out There task sign-in code',
     badge: 'Sign-In Code',
     bodyRowsHtml,
     footer: 'You received this because someone entered this address on task.uhurued.com. Questions? Reply to this email.',
@@ -118,14 +148,14 @@ export function taskAssignedEmailHtml(notice: TaskAssignmentNotice) {
       ? `        <tr><td style="padding:16px 0 0;font-family:${mono};font-size:13px;line-height:20px;color:#9BB0A2">GitHub: <a href="${escapeHtml(notice.repoUrl)}" style="color:#FFD75B;text-decoration:underline">${escapeHtml(notice.repoUrl)}</a></td></tr>`
       : '',
     `        <tr><td style="padding:24px 0 0"><a href="${escapeHtml(portalUrl)}" style="font-family:${sans};font-size:16px;line-height:22px;font-weight:700;color:#FFD75B;text-decoration:underline;text-underline-offset:4px">Open task in your workspace (task.uhurued.com)</a></td></tr>`,
-    `        <tr><td style="padding:24px 0 32px;font-family:${sans};font-size:15px;line-height:24px;color:#EAE5D7">Post your progress writeups, questions, or suggestions directly on the task thread.<br><strong style="color:#FFD75B">Uhurued Engineering Tracker</strong></td></tr>`,
+    `        <tr><td style="padding:24px 0 32px;font-family:${sans};font-size:15px;line-height:24px;color:#EAE5D7">Post your progress writeups, questions, or suggestions directly on the task thread.<br><strong style="color:#FFD75B">Out There Engineering</strong></td></tr>`,
   ].filter(Boolean).join('\n');
 
   return renderOneToneEmail({
     title: `New task assigned: ${notice.taskTitle}`,
     badge: 'Task Assigned',
     bodyRowsHtml,
-    footer: 'Sent from tracker@uhurued.com because a task was assigned to your engineering account at task.uhurued.com.',
+    footer: 'Sent from task@uhurued.com because a task was assigned to your engineering account at task.uhurued.com.',
   });
 }
 
@@ -140,37 +170,59 @@ export function createTrackerMailer(
   replyTo = 'support@uhurued.com',
 ): TrackerMailer {
   const sender = normalizeTrackerSender(from);
-  const resend = apiKey && apiKey.startsWith('re_') ? new Resend(apiKey) : null;
+
+  async function trySend(payload: {
+    to: string;
+    subject: string;
+    text: string;
+    html: string;
+    headers: Record<string, string>;
+  }): Promise<boolean> {
+    const keys = resolveResendApiKeys(apiKey);
+    if (keys.length === 0) return false;
+
+    for (const key of keys) {
+      try {
+        const resend = new Resend(key);
+        const { error } = await resend.emails.send({
+          from: sender,
+          to: payload.to,
+          replyTo,
+          subject: payload.subject,
+          text: payload.text,
+          html: payload.html,
+          headers: payload.headers,
+        });
+        if (!error) {
+          return true;
+        }
+        console.warn(`Resend key ${key.slice(0, 8)}... warning: ${error.message}`);
+      } catch (err) {
+        console.warn(`Resend key ${key.slice(0, 8)}... exception:`, err);
+      }
+    }
+    return false;
+  }
 
   return {
     async sendCode(email: string, code: string) {
-      if (!resend) {
-        return { delivered: false, previewCode: code };
-      }
-      const { error } = await resend.emails.send({
-        from: sender,
+      const delivered = await trySend({
         to: email,
-        replyTo,
-        subject: `Your Uhurued Tracker sign-in code: ${code}`,
-        text: `Your Uhurued Tracker sign-in code is ${code}. It expires in 10 minutes. Enter it on https://task.uhurued.com. If you did not request it, you can ignore this email.`,
+        subject: `Your Out There sign-in code: ${code}`,
+        text: `Your Out There sign-in code is ${code}. It expires in 10 minutes. Enter it on https://task.uhurued.com. If you did not request it, you can ignore this email.`,
         html: codeEmailHtml(code),
-        headers: { 'X-Entity-Ref-ID': `uhuru-tracker-code-${email}-${code}` },
+        headers: { 'X-Entity-Ref-ID': `out-there-task-code-${email}-${code}` },
       });
-      if (error) {
-        throw new Error(`Email delivery failed: ${error.message}`);
+      if (!delivered) {
+        return { delivered: false, previewCode: code };
       }
       return { delivered: true };
     },
 
     async sendTaskAssigned(notice: TaskAssignmentNotice) {
-      if (!resend) {
-        return { delivered: false };
-      }
-      const { error } = await resend.emails.send({
-        from: sender,
+      const delivered = await trySend({
         to: notice.toEmail,
-        replyTo,
-        subject: `[Uhurued Task] ${notice.taskTitle}`,
+        subject: `[Out There Task] ${notice.taskTitle}`,
         text: [
           `New task assigned to you on task.uhurued.com: ${notice.taskTitle}`,
           `Priority: ${notice.priority.toUpperCase()} | Assigned by: ${notice.assignedBy}`,
@@ -181,13 +233,9 @@ export function createTrackerMailer(
           `Open your workspace: ${notice.workspaceUrl || 'https://task.uhurued.com'}`,
         ].filter(Boolean).join('\n'),
         html: taskAssignedEmailHtml(notice),
-        headers: { 'X-Entity-Ref-ID': `uhuru-tracker-task-${Date.now()}-${notice.toEmail}` },
+        headers: { 'X-Entity-Ref-ID': `out-there-task-assign-${Date.now()}-${notice.toEmail}` },
       });
-      if (error) {
-        console.warn('Task assignment email warning:', error.message);
-        return { delivered: false };
-      }
-      return { delivered: true };
+      return { delivered };
     },
   };
 }

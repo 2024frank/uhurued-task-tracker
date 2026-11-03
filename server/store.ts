@@ -91,7 +91,7 @@ export interface BugReportRecord {
 }
 
 const DEFAULT_ADMIN_EMAILS = new Set(
-  (process.env.ADMIN_EMAILS || 'fkusiapp@oberlin.edu,kusi@uhurued.com,tracker@uhurued.com')
+  (process.env.ADMIN_EMAILS || 'fkusiapp@oberlin.edu,fkusiapp@gmail.com,kusi@uhurued.com,task@uhurued.com')
     .split(',')
     .map((e) => e.trim().toLowerCase())
     .filter(Boolean),
@@ -105,7 +105,9 @@ export function isOwnerOrAdminEmail(email: string): boolean {
 export function deriveDisplayName(email: string, providedName?: string): string {
   if (providedName && providedName.trim()) return providedName.trim();
   const clean = email.trim().toLowerCase();
-  if (clean === 'fkusiapp@oberlin.edu' || clean === 'kusi@uhurued.com') return 'Frank Kusi Appiah';
+  if (clean === 'fkusiapp@oberlin.edu' || clean === 'fkusiapp@gmail.com' || clean === 'kusi@uhurued.com') {
+    return 'Frank Kusi Appiah';
+  }
   const local = clean.split('@')[0] || 'Engineer';
   return local
     .split(/[._-]+/)
@@ -207,9 +209,9 @@ function buildSeedProjects(): ProjectRecord[] {
       ].join('\n'),
       defaultBranch: 'main',
       envContent: [
-        '# Shared Engineering Environment — Uhurued Task Tracker',
+        '# Shared Engineering Environment — Out There Task Tracker',
         'VITE_API_URL=/api',
-        'EMAIL_FROM="Uhurued Tracker <tracker@uhurued.com>"',
+        'EMAIL_FROM="Out There <task@uhurued.com>"',
         'PUBLIC_QWEN_GATEWAY_URL=https://kusi-qwen-api.vercel.app/v1',
         'LOCAL_HERETIC_URL=http://127.0.0.1:8083/v1',
         'LOCAL_MODEL_ID=qwen3.6-35b-a3b-heretic',

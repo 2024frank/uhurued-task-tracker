@@ -7,10 +7,11 @@ import { codeEmailHtml, DEFAULT_SENDER, normalizeTrackerSender, taskAssignedEmai
 import { App } from './App';
 import { TrackerApiClient } from './api';
 
-describe('Uhurued Task Tracker — Email Template & API (tracker@uhurued.com)', () => {
-  it('formats sign-in and task assignment emails using Out There one-tone #122218/#FFD75B layout from tracker@uhurued.com', () => {
-    expect(DEFAULT_SENDER).toBe('Uhurued Tracker <tracker@uhurued.com>');
-    expect(normalizeTrackerSender('anything@example.com')).toBe('Uhurued Tracker <tracker@uhurued.com>');
+describe('Out There Task Tracker — Email Template & API (task@uhurued.com)', () => {
+  it('formats sign-in and task assignment emails using Out There one-tone #122218/#FFD75B layout from task@uhurued.com', () => {
+    expect(DEFAULT_SENDER).toBe('Out There <task@uhurued.com>');
+    expect(normalizeTrackerSender('anything@example.com')).toBe('Out There <task@uhurued.com>');
+    expect(normalizeTrackerSender('Uhurued Tracker <tracker@uhurued.com>')).toBe('Out There <task@uhurued.com>');
 
     const otpHtml = codeEmailHtml('654321');
     expect(otpHtml).toContain('#122218');
@@ -28,7 +29,7 @@ describe('Uhurued Task Tracker — Email Template & API (tracker@uhurued.com)', 
       assignedBy: 'fkusiapp@oberlin.edu',
     });
     expect(assignedHtml).toContain('Migrate WebSocket handler');
-    expect(assignedHtml).toContain('tracker@uhurued.com');
+    expect(assignedHtml).toContain('task@uhurued.com');
     expect(assignedHtml).toContain('https://github.com/Sankofa-Robotics/out-there');
   });
 
@@ -56,7 +57,7 @@ describe('Uhurued Task Tracker — Email Template & API (tracker@uhurued.com)', 
     });
     expect(reqRes.status).toBe(200);
     const reqBody = await reqRes.json();
-    expect(reqBody.sender).toBe('Uhurued Tracker <tracker@uhurued.com>');
+    expect(reqBody.sender).toBe('Out There <task@uhurued.com>');
     expect(reqBody.previewCode).toMatch(/^\d{6}$/);
 
     // 2. Verify OTP and create session
@@ -142,7 +143,7 @@ describe('Uhurued Task Tracker — Email Template & API (tracker@uhurued.com)', 
     expect(bugData.bug.agentFixSummary.length).toBeGreaterThan(10);
   });
 
-  it('renders the sign-in flow and enters the collaborative workspace', async () => {
+  it('renders the Out There sign-in flow and enters the collaborative workspace', async () => {
     const store = new MemoryTrackerStore();
     const honoApp = createTrackerApp({
       store,

@@ -1,1 +1,1 @@
-{"root":["./src/App.test.tsx","./src/App.tsx","./src/api.ts","./src/main.tsx","./src/test-setup.ts","./server/ai.ts","./server/app.ts","./server/dev-server.ts","./server/email.ts","./server/store.ts","./api/index.ts"],"version":"5.9.3"}
+{"root":["./src/App.test.tsx","./src/App.tsx","./src/api.ts","./src/main.tsx","./src/test-setup.ts"],"version":"5.9.3"}
